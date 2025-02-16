@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Manager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .expense-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .expense-form input, .expense-form button {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .expense-form button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+        .expense-form button:hover {
+            background-color: #218838;
+        }
+        .expense-list {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+        .expense-list table {
+            width: 100%;
+        }
+        .expense-list th, .expense-list td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            white-space: nowrap;
+        }
+        .expense-list th {
+            background-color: #007bff;
+            color: white;
+        }
+        .total {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            .expense-form input, .expense-form button {
+                font-size: 14px;
+                padding: 10px;
+            }
+            .expense-list th, .expense-list td {
+                padding: 8px;
+            }
+            .total {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Expense Manager</h1>
+
+        <div class="expense-form">
+            <input type="text" id="expense-name" placeholder="Expense Name" required>
+            <input type="number" id="expense-amount" placeholder="Expense Amount" required>
+            <button onclick="addExpense()">Add Expense</button>
+        </div>
+
+        <div class="expense-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Expense Name</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                </tbody>
+            </table>
+        </div>
+        <div class="total" id="total-amount">Total: $0.00</div>
+    </div>
+
+    <script>
+        let expenses = [];
+
+        function addExpense() {
+            const name = document.getElementById('expense-name').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            
+            if (name && !isNaN(amount) && amount > 0) {
+                const expense = { name, amount };
+                expenses.push(expense);
+                updateExpenseList();
+                calculateTotal();
+
+                document.getElementById('expense-name').value = '';
+                document.getElementById('expense-amount').value = '';
+            } else {
+                alert('Please enter valid details.');
+            }
+        }
+
+        function removeExpense(index) {
+            expenses.splice(index, 1);
+            updateExpenseList();
+            calculateTotal();
+        }
+
+        function updateExpenseList() {
+            const expenseTableBody = document.getElementById('expense-table-body');
+            expenseTableBody.innerHTML = '';
+
+            expenses.forEach((expense, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${expense.name}</td>
+                    <td>$${expense.amount.toFixed(2)}</td>
+                    <td><button class="remove-btn" onclick="removeExpense(${index})">Remove</button></td>
+                `;
+                expenseTableBody.appendChild(row);
+            });
+        }
+
+        function calculateTotal() {
+            const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            document.getElementById('total-amount').textContent = `Total: $${total.toFixed(2)}`;
+        }
+    </script>
+
+</body>
+</html>
